@@ -9,14 +9,14 @@ import yunho.app.kotlindictionary.Entity.Student
 interface StudentDAO {
 
     @Query("SELECT * FROM Student")
-    fun getALl(): List<Student>
+    suspend fun getALl(): List<Student>
 
     @Query("DELETE FROM Student WHERE id = :ID")
-    fun Delete(ID:Int)
+    suspend fun Delete(ID:Int)
 
     @Insert
-    fun Insert(student: Student)
+    suspend fun Insert(student: Student)
 
     @Query("DELETE FROM Student")
-    fun DeleteAll()
+    suspend fun DeleteAll()
 }

@@ -8,17 +8,26 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.*
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import yunho.app.kotlindictionary.Adapter.RestaurantAdapter
 import yunho.app.kotlindictionary.DTO.RestaurantDTO
 import yunho.app.kotlindictionary.Service.APIService
 import yunho.app.kotlindictionary.databinding.ActivityRestapitestBinding
+import java.lang.Exception
+import kotlin.coroutines.CoroutineContext
 
-class RestAPITestActivity : AppCompatActivity() {
+class RestAPITestActivity : AppCompatActivity(),CoroutineScope {
     private lateinit var binding: ActivityRestapitestBinding
     private lateinit var adapter: RestaurantAdapter
     private lateinit var API : APIService
+    //코루틴 사용시 재정의 필요한 부분
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
+
+    private val job = Job()
+
     private var isLoading = true
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityRestapitestBinding.inflate(LayoutInflater.from(this))
@@ -67,35 +76,25 @@ class RestAPITestActivity : AppCompatActivity() {
         }
 
     }
-    private fun getRestaurants(pageIndex:Int,perPage:Int){
-        API.getRestaurantList(pageIndex,perPage, key).enqueue(object : Callback<RestaurantDTO>{
-            override fun onResponse(call: Call<RestaurantDTO>, response: Response<RestaurantDTO>) {
-
-                if(response.isSuccessful.not()) {
-                    Log.e("1","fail")
-                    return
-                }
-
-                response.body()?.let {
-                    Log.e("1","${it.restaurants}")
-                    it.restaurants.forEach {
-                        Log.e("1","${it}")
-                        adapter.restaurants.add(it)
-                        adapter.notifyItemInserted(adapter.restaurants.size)
+    private fun getRestaurants(pageIndex:Int,perPage:Int) = launch(coroutineContext){
+        withContext(Dispatchers.IO){
+            val response = API.getRestaurantList(pageIndex,perPage, key)
+            if(response.isSuccessful){
+                val body = response.body()
+                withContext(Dispatchers.Main){
+                    body?.let {
+                        it.restaurants.forEach {
+                            Log.e("1","${it}")
+                            adapter.restaurants.add(it)
+                            adapter.notifyItemInserted(adapter.restaurants.size)
+                        }
                     }
                 }
             }
-
-            override fun onFailure(call: Call<RestaurantDTO>, t: Throwable) {
-                Log.e("1","${t.message}")
-                Log.e("1","${t.cause}")
-                Log.e("1","${call.isCanceled}")
-                Log.e("1","${call.request().url()}")
-            }
-
-        })
+        }
     }
     companion object{
         private const val key = "IzXw1F88L1rL6JJuOYmZ+8lCgnUTMhLSAjPaeS6yf2R58uvo1Bki9dBhl/y9VzA97RRD4ff4XTgLfuCtB7jwFw=="
     }
+
 }

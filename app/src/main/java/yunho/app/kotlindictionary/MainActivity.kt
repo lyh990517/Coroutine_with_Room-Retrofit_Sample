@@ -53,3 +53,5 @@ class MainActivity : AppCompatActivity() {
 //TODO html parsing
 //TODO Motion layout
 //TODO 무한 스크롤 O
+//TODO MVVM
+//TODO DataBinding
