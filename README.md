@@ -5,7 +5,7 @@
 ![rest](https://user-images.githubusercontent.com/45873564/170499179-b53cdc7c-07f9-46cb-a06f-408d92616f32.jpeg)
 ![room](https://user-images.githubusercontent.com/45873564/170499222-d61043ff-2298-4ebb-8a77-0b3dcef75780.jpeg)
 <br>
-<h1>Coroutine을 이용한 Datasource의 비동기 처리 에제</h1>
+<h1>Coroutine을 이용한 Datasource의 비동기 처리 예제</h1>
 <br>
 dataSource task 시엔 IO Dispatcher
 <br>
